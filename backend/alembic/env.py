@@ -42,7 +42,14 @@ def do_run_migrations(connection) -> None:
 
 
 async def run_migrations_online() -> None:
-    connect_args = {} if settings.db_is_local else {"ssl": True}
+    if settings.db_is_local:
+        connect_args: dict = {}
+    else:
+        connect_args = {
+            "ssl": True,
+            "statement_cache_size": 0,
+            "prepared_statement_cache_size": 0,
+        }
     engine = create_async_engine(settings.database_url, connect_args=connect_args)
     async with engine.connect() as connection:
         await connection.run_sync(do_run_migrations)

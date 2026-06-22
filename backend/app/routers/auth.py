@@ -82,17 +82,30 @@ async def me(current_user: User = Depends(get_current_user)):
 
 
 @router.post("/refresh")
-async def refresh(request: Request, response: Response):
+async def refresh(
+    request: Request,
+    response: Response,
+    session: AsyncSession = Depends(get_session),
+):
+    import uuid as _uuid
+
     token = request.cookies.get("refresh_token")
     if not token:
         raise HTTPException(status_code=401, detail="No refresh token")
     payload = decode_token(token)
     if payload.get("type") != "refresh":
         raise HTTPException(status_code=401, detail="Invalid token type")
-    access = create_access_token(payload["sub"], payload.get("email", ""))
+    try:
+        user_id = _uuid.UUID(payload["sub"])
+    except (KeyError, ValueError):
+        raise HTTPException(status_code=401, detail="Invalid token")
+    user = await session.get(User, user_id)
+    if user is None or not user.is_active:
+        raise HTTPException(status_code=401, detail="User not found or inactive")
     from ..config import get_settings
 
     settings = get_settings()
+    access = create_access_token(str(user.id), user.email)
     response.set_cookie(
         key="access_token",
         value=access,

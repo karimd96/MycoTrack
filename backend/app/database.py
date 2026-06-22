@@ -5,19 +5,34 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
+from sqlalchemy.pool import NullPool
 
 from .config import get_settings
 
 settings = get_settings()
 
-connect_args: dict = {} if settings.db_is_local else {"ssl": True}
-
-engine = create_async_engine(
-    settings.database_url,
-    echo=False,
-    pool_pre_ping=True,
-    connect_args=connect_args,
-)
+if settings.db_is_local:
+    # Local dev Postgres: normal pooling, no SSL.
+    engine = create_async_engine(
+        settings.database_url,
+        echo=False,
+        pool_pre_ping=True,
+    )
+else:
+    # Supabase / remote: SSL required. Disable asyncpg + SQLAlchemy prepared
+    # statement caching and use NullPool so we are compatible with the
+    # transaction pooler (PgBouncer) on port 6543, while remaining correct for
+    # the session pooler (5432) and direct connections.
+    engine = create_async_engine(
+        settings.database_url,
+        echo=False,
+        poolclass=NullPool,
+        connect_args={
+            "ssl": True,
+            "statement_cache_size": 0,
+            "prepared_statement_cache_size": 0,
+        },
+    )
 
 AsyncSessionLocal = async_sessionmaker(
     engine, class_=AsyncSession, expire_on_commit=False
