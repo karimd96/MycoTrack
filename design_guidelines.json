@@ -1,0 +1,80 @@
+{
+  "theme": "dark",
+  "archetype": "High-Contrast Tactical Lab (Archetype 2 / Swiss High-Contrast hybrid)",
+  "colors": {
+    "background": "#0d100c",
+    "surface": "#161b15",
+    "surface_hover": "#1f261e",
+    "border": "#2b3628",
+    "primary": "#a3e635",
+    "primary_hover": "#84cc16",
+    "text_primary": "#f8fafc",
+    "text_secondary": "#94a3b8",
+    "text_muted": "#64748b",
+    "status": {
+      "healthy": "#a3e635",
+      "incubating": "#f59e0b",
+      "contaminated": "#ef4444",
+      "archived": "#64748b"
+    }
+  },
+  "typography": {
+    "font_family": "Outfit, sans-serif",
+    "headings": {
+      "h1": "text-3xl sm:text-4xl font-bold tracking-tight text-[#f8fafc]",
+      "h2": "text-2xl sm:text-3xl font-semibold tracking-tight text-[#f8fafc]",
+      "h3": "text-xl sm:text-2xl font-medium tracking-tight text-[#f8fafc]",
+      "h4": "text-lg font-medium text-[#f8fafc]"
+    },
+    "body": "text-base font-normal text-[#94a3b8] leading-relaxed",
+    "labels": "text-xs font-semibold tracking-[0.15em] uppercase text-[#64748b]"
+  },
+  "layout_and_spacing": {
+    "philosophy": "Dense but scannable. Mobile-first layout emphasizing large tap targets and vertical scroll.",
+    "container_padding": "p-4 sm:p-6 lg:p-8",
+    "grid_system": "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6",
+    "navigation": "Responsive Sidebar: Hidden on mobile (use hamburger drawer or bottom nav). Sticky sidebar on desktop that can collapse to icon-only view.",
+    "cards": "bg-[#161b15] border border-[#2b3628] rounded-xl p-5 flex flex-col gap-4 shadow-sm"
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-[#a3e635] text-[#0d100c] hover:bg-[#84cc16] font-semibold rounded-lg px-4 py-2 transition-colors shadow-sm",
+      "secondary": "bg-transparent text-[#f8fafc] border border-[#2b3628] hover:bg-[#1f261e] font-medium rounded-lg px-4 py-2 transition-colors",
+      "ghost": "text-[#94a3b8] hover:text-[#f8fafc] hover:bg-[#1f261e] rounded-lg px-4 py-2 transition-colors",
+      "danger": "bg-transparent text-[#ef4444] border border-[#ef4444]/30 hover:bg-[#ef4444]/10 font-medium rounded-lg px-4 py-2 transition-colors"
+    },
+    "culture_card": {
+      "structure": "Top: Flex-between (Species Name as H4, Status Badge). Middle: Grid of details (Culture Type, Location, Created Date). Bottom: Action bar (Print Label, Child Culture, Add Event icon buttons).",
+      "id_display_rule": "Culture IDs should be displayed in a subtle monospace format (e.g., text-xs text-muted) to de-emphasize raw test IDs like PTEST/CTEST, while still keeping them available for reference."
+    },
+    "status_badge": "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider border"
+  },
+  "motion_and_interactions": {
+    "hover_states": "Cards lift slightly (-translate-y-1) on desktop hover with a subtle glow shadow. Buttons use swift color transitions (duration-150).",
+    "page_transitions": "Framer motion fade in and slide up (opacity 0 to 1, y 10 to 0) on component mount.",
+    "list_animations": "Staggered entrance for culture cards in the grid."
+  },
+  "media": {
+    "login_background": "https://images.unsplash.com/photo-1707430393809-784967fe6fee?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxOTJ8MHwxfHNlYXJjaHwxfHxkYXJrJTIwYWJzdHJhY3QlMjBncmVlbiUyMGJpb2xvZ2ljYWx8ZW58MHx8fHwxNzgyMTY3MzEwfDA&ixlib=rb-4.1.0&q=85",
+    "login_background_description": "Dark abstract biological background with wavy green lines, to be used behind a glassmorphic login panel with high blur."
+  },
+  "accessibility_and_testing": {
+    "contrast": "Ensure minimum 4.5:1 ratio. The primary lime green (#a3e635) against dark charcoal (#0d100c) provides extremely high contrast.",
+    "test_ids": "All interactive and informational elements MUST have data-testid attributes (e.g., data-testid='add-culture-btn', data-testid='culture-card-{id}')."
+  },
+  "instructions_to_main_agent": [
+    "Build a mobile-first UI using React (JSX) and Tailwind CSS.",
+    "Configure Tailwind with the exact color hex codes provided in this JSON.",
+    "Use the 'Outfit' font for all text.",
+    "Implement a collapsible sidebar navigation for Admin and Operator roles (different links per role). Ensure it behaves well on mobile (hamburger menu/drawer).",
+    "Remove the 'Made with Emergent' badge completely.",
+    "Build the Cultures List as a responsive Grid of Cards (Bento style). DO NOT use standard table rows for cultures.",
+    "For the Culture Card: prominently feature the Species and Culture Type. Format raw IDs like 'PTEST123' as '#PT-123' or relegate them to a subtle gray tag so they aren't 'ugly'.",
+    "Ensure standard buttons are prominent: 'Add Culture', 'Add Event', 'Print Label', 'Create Child Culture'.",
+    "For Add Culture / Create Child Culture forms: Use proper dropdowns for Species, Location, Recipe, Parent ID. Create Child Culture should pre-fill the parent ID.",
+    "Culture Detail page must have a timeline view of CultureEvents and clearly show lineage.",
+    "Use Shadcn UI components (or raw Tailwind) but strictly theme them to the dark charcoal/lime aesthetic. Go border-heavy with #2b3628 and flat #161b15 backgrounds rather than pure black.",
+    "Leverage framer-motion for smooth page mounts and sonner for toast notifications.",
+    "Use lucide-react icons extensively for navigation and card metadata (e.g., Leaf, Thermometer, MapPin, Fingerprint, Calendar, Activity)."
+  ]
+}
