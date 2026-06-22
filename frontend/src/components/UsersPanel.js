@@ -80,8 +80,8 @@ export default function UsersPanel() {
         </button>
       </div>
 
-      <div className="rounded-xl border border-stone-800 overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="rounded-xl border border-stone-800 overflow-x-auto">
+        <table className="w-full text-sm min-w-[560px]">
           <thead className="bg-[#11150f] text-stone-400">
             <tr>
               <th className="text-left px-4 py-3 font-medium">Email</th>

@@ -130,8 +130,8 @@ export default function CrudPanel({
         )}
       </div>
 
-      <div className="rounded-xl border border-stone-800 overflow-hidden">
-        <table className="w-full text-sm">
+      <div className="rounded-xl border border-stone-800 overflow-x-auto">
+        <table className="w-full text-sm min-w-[520px]">
           <thead className="bg-[#11150f] text-stone-400">
             <tr>
               {columns.map((c) => (

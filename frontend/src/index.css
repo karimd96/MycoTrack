@@ -3,6 +3,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes slidein {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+}
+
+
 body {
     margin: 0;
     font-family: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
