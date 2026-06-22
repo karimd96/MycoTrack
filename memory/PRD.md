@@ -45,6 +45,17 @@ Users, Roles, Species, Locations, Recipes, Cultures, CultureEvents.
 - JWT cookie auth + RBAC verified. Testing agent: backend 20/20, frontend 16/16, no bugs.
 - Env fix applied: patched react-scripts dev-server config for webpack-dev-server v5 compat.
 
+## Status — Supabase readiness (2026-06-22)
+- Supabase-compat done in code (NOT yet connected): remote connections use SSL +
+  statement_cache_size=0 + prepared_statement_cache_size=0 + NullPool (compatible with
+  Supabase session pooler :5432, transaction pooler :6543, and direct connection).
+  Applied in app/database.py and alembic/env.py. Local dev path unchanged.
+- Replaced deprecated @app.on_event("startup") with FastAPI lifespan handler.
+- BLOCKED on user action: real Supabase POSTGRES_URL not yet provided. To switch:
+  edit ONLY the POSTGRES_URL line in /app/backend/.env, then run
+  `cd /app/backend && alembic upgrade head` and restart backend. App currently runs on
+  local dev Postgres (postgresql+asyncpg://mycotrack:...@localhost:5432/mycotrack).
+
 ## Deferred / Backlog (P1/P2)
 - Migrate to Supabase URL (user action) + verify SSL connection.
 - Deferred entities: Ingredients, Inventory, Batches, Attachments, EnvironmentalLogs.

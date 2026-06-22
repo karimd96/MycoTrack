@@ -1,6 +1,8 @@
 from app.config import get_settings  # noqa: E402  (loads .env before anything else)
 
+import asyncio
 import logging
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from sqlalchemy import select
@@ -20,7 +22,25 @@ logging.basicConfig(
 )
 logger = logging.getLogger("mycotrack")
 
-app = FastAPI(title="MycoTrack API", version="1.0.0")
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    # Startup: seed default roles + initial admin (idempotent, with retries
+    # so a briefly-unavailable DB / cold Supabase connection does not crash boot).
+    for attempt in range(1, 6):
+        try:
+            await seed_roles_and_admin()
+            break
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("Startup seeding attempt %s/5 failed: %s", attempt, exc)
+            await asyncio.sleep(2)
+    else:
+        logger.error("Startup seeding gave up after retries; DB may be unavailable.")
+    yield
+    # Shutdown: nothing to clean up (NullPool / engine disposes connections).
+
+
+app = FastAPI(title="MycoTrack API", version="1.0.0", lifespan=lifespan)
 
 
 @app.get("/api/health")
@@ -103,19 +123,3 @@ def _write_test_credentials() -> None:
             f.write(content)
     except OSError as exc:
         logger.warning("Could not write test_credentials.md: %s", exc)
-
-
-@app.on_event("startup")
-async def on_startup() -> None:
-    import asyncio
-
-    for attempt in range(1, 6):
-        try:
-            await seed_roles_and_admin()
-            return
-        except Exception as exc:  # noqa: BLE001
-            logger.warning(
-                "Startup seeding attempt %s/5 failed: %s", attempt, exc
-            )
-            await asyncio.sleep(2)
-    logger.error("Startup seeding gave up after retries; DB may be unavailable.")
