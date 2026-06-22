@@ -1,0 +1,48 @@
+{
+  "summary": "Frontend-only validation of CORS fix, seeded Pink Oyster lineage, new React Flow Genealogy page, role-based nav, and mobile UX. Discovered (and fixed) one seed-idempotency bug that blocked admin login. After re-seed, all 8 acceptance flows pass with zero runtime errors and zero CORS issues.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/test_reports/iteration_3.json",
+    "/app/backend/seed_mock.py"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "seed_mock.py was non-idempotent for passwords: it created users on first run but never refreshed password_hash on re-run. After the user's password contract changed to Admin#2026, karim.dabbousi@gmail.com was locked out (401 'Invalid email or password'). FIXED in this iteration by also updating existing.password_hash = hash_password(u['password']) in the else branch. Re-running seed_mock.py now correctly resets credentials per the playbook.",
+    "Layout.js still renders NavItems twice (sidebar + mobile drawer) — same dual-DOM-node observation from iter 2. Tests must use ':visible' filter. Not a defect.",
+    "CultureList query for [data-testid^=\"culture-card-\"] sometimes matches 2x in dev (React StrictMode dev double-render). Production count is correct (5). Worth verifying StrictMode is not duplicating mounted nodes in test instrumentation."
+  ],
+  "updated_files": [
+    "/app/backend/seed_mock.py (added password_hash refresh on existing-user path so seed becomes idempotent for credentials)"
+  ],
+  "success_rate": {
+    "backend": "n/a (frontend-only per request)",
+    "frontend": "100% (all 8 acceptance criteria validated)"
+  },
+  "test_credentials": "karim.dabbousi@gmail.com / Admin#2026 (admin), operator@mycotrack.io / Operator#2026, viewer@mycotrack.io / Viewer#2026 — all working after seed fix.",
+  "seed_data_creation": "Re-ran /app/backend/seed_mock.py after fixing idempotency. DB has exactly 5 Pink Oyster cultures, 4 species, 4 locations, 3 users.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "If admin login fails again with Invalid creds, run `cd /app/backend && python seed_mock.py` — the script now resets passwords on each run. React Flow nodes use class .react-flow__node and edges .react-flow__edge; clicking a node navigates to /cultures/:id. Culture cards use data-testid='culture-card-<id>' (full id, not a prefix). Lineage panel is plain text inside CultureDetail (no dedicated testid).",
+  "validated_flows": [
+    "Login as karim.dabbousi@gmail.com/Admin#2026 → Dashboard (Welcome back, Admin). No runtime overlay, no CORS, no page errors, no console errors.",
+    "Admin sidebar: nav-dashboard, nav-cultures, nav-genealogy, nav-species, nav-locations, nav-recipes, nav-users all present.",
+    "Dashboard stats: TOTAL CULTURES=5, ACTIVE=5, CONTAMINATED=0, SPECIES=4. Recent cultures shows all 5 Pink Oyster items.",
+    "/species lists Pink Oyster, Oyster, Lion's Mane, Turkey Tail. /locations lists Laboratory, Incubator Shelf A, Fridge, Fruiting Tent A.",
+    "/cultures renders 5 CARDS (not a table): Syringe, Agar Plate, Liquid Culture, Grain Spawn, Fruiting Block. Each card shows Pleurotus djamor, #code, type (liquid/agar/grain/bulk), ACTIVE badge, location, 6/22/2026.",
+    "Clicking the Grain Spawn card → /cultures/<id> (culture-detail). Lineage panel renders Syringe → Agar Plate → Liquid Culture → Grain Spawn chain.",
+    "/genealogy renders genealogy-page + genealogy-canvas with exactly 5 .react-flow__node and 4 .react-flow__edge. Nodes are color-coded (active=green). Clicking a node navigates to /cultures/<id> detail.",
+    "Operator role: sees Dashboard/Cultures/Genealogy/Species/Locations/Recipes; NO nav-users. add-culture-btn visible.",
+    "Viewer role: NO nav-users, NO add-culture-btn, NO card-add-event, NO card-child-culture; Genealogy still loads with 5 nodes (read-only OK).",
+    "Mobile 390x844 (admin): mobile-menu-button visible, drawer opens with nav-genealogy visible, culture cards stack single-column (card width ≈ 358px ≈ viewport - padding), /genealogy canvas renders.",
+    "No PTEST / CTEST / EVCTEST leftover labels anywhere in /cultures, /species, /locations, /recipes."
+  ],
+  "rca_of_the_issue": "Bug: admin (karim.dabbousi@gmail.com) login returned 401 even though seed_mock.py said 'users ensured'. RCA: seed_mock.py created users on first run but only refreshed full_name/role/is_active on subsequent runs — NOT password_hash. So when the user changed the admin password contract from a previous value to 'Admin#2026', the seed re-run silently kept the stale hash. Reproduction: change password literal in seed_mock.py, re-run, attempt login → 401. Fix: in /app/backend/seed_mock.py, the existing-user branch now also sets existing.password_hash = hash_password(u['password']). Verified by re-seeding and successfully logging in via POST /api/auth/login (returns 200 + user JSON with role=admin)."
+}

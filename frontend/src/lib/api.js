@@ -1,9 +1,17 @@
 import axios from "axios";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+// Use same-origin for API calls. The platform ingress routes `/api` on whatever
+// domain the app is served from to the backend, so same-origin keeps cookies
+// first-party and avoids cross-domain CORS (the ingress returns
+// `Access-Control-Allow-Origin: *` which browsers reject with credentials).
+// Falls back to REACT_APP_BACKEND_URL for non-browser/SSR contexts.
+const ORIGIN =
+  typeof window !== "undefined" && window.location?.origin
+    ? window.location.origin
+    : process.env.REACT_APP_BACKEND_URL;
 
 export const api = axios.create({
-  baseURL: `${BACKEND_URL}/api`,
+  baseURL: `${ORIGIN}/api`,
   withCredentials: true,
   headers: { "Content-Type": "application/json" },
 });

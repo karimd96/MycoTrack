@@ -5,6 +5,7 @@ import {
   Sprout,
   LayoutDashboard,
   Dna,
+  Network,
   FlaskConical,
   MapPin,
   BookOpen,
@@ -17,6 +18,7 @@ import {
 const ALL_NAV = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, end: true, roles: ["admin", "operator", "viewer"] },
   { to: "/cultures", label: "Cultures", icon: Dna, roles: ["admin", "operator", "viewer"] },
+  { to: "/genealogy", label: "Genealogy", icon: Network, roles: ["admin", "operator", "viewer"] },
   { to: "/species", label: "Species", icon: FlaskConical, roles: ["admin", "operator", "viewer"] },
   { to: "/locations", label: "Locations", icon: MapPin, roles: ["admin", "operator", "viewer"] },
   { to: "/recipes", label: "Recipes", icon: BookOpen, roles: ["admin", "operator", "viewer"] },

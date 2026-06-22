@@ -8,6 +8,7 @@ import Login from "@/pages/Login";
 import Dashboard from "@/pages/Dashboard";
 import CultureList from "@/pages/CultureList";
 import CultureDetail from "@/pages/CultureDetail";
+import Genealogy from "@/pages/Genealogy";
 import { SpeciesPage, LocationsPage, RecipesPage, UsersPage } from "@/pages/ResourcePages";
 
 function AdminOnly({ children }) {
@@ -32,6 +33,7 @@ function App() {
             <Route index element={<Dashboard />} />
             <Route path="cultures" element={<CultureList />} />
             <Route path="cultures/:id" element={<CultureDetail />} />
+            <Route path="genealogy" element={<Genealogy />} />
             <Route path="species" element={<SpeciesPage />} />
             <Route path="locations" element={<LocationsPage />} />
             <Route path="recipes" element={<RecipesPage />} />
