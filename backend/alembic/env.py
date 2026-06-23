@@ -1,4 +1,5 @@
 import asyncio
+import ssl
 import os
 import sys
 from logging.config import fileConfig
@@ -17,6 +18,12 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 settings = get_settings()
+
+ssl_context = ssl.create_default_context()
+if os.environ.get("DB_SSL_INSECURE", "false").lower() == "true":
+    ssl_context.check_hostname = False
+    ssl_context.verify_mode = ssl.CERT_NONE
+
 
 
 def run_migrations_offline() -> None:
@@ -46,7 +53,7 @@ async def run_migrations_online() -> None:
         connect_args: dict = {}
     else:
         connect_args = {
-            "ssl": True,
+            "ssl": ssl_context,
             "statement_cache_size": 0,
             "prepared_statement_cache_size": 0,
         }

@@ -1,4 +1,8 @@
 from collections.abc import AsyncGenerator
+import os
+import ssl
+
+import certifi
 
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -10,6 +14,12 @@ from sqlalchemy.pool import NullPool
 from .config import get_settings
 
 settings = get_settings()
+
+ssl_context = ssl.create_default_context()
+if os.environ.get("DB_SSL_INSECURE", "false").lower() == "true":
+    ssl_context.check_hostname = False
+    ssl_context.verify_mode = ssl.CERT_NONE
+
 
 if settings.db_is_local:
     # Local dev Postgres: normal pooling, no SSL.
@@ -28,10 +38,10 @@ else:
         echo=False,
         poolclass=NullPool,
         connect_args={
-            "ssl": True,
-            "statement_cache_size": 0,
-            "prepared_statement_cache_size": 0,
-        },
+        "ssl": ssl_context,
+        "statement_cache_size": 0,
+        "prepared_statement_cache_size": 0,
+ },
     )
 
 AsyncSessionLocal = async_sessionmaker(
