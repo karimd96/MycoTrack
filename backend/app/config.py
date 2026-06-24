@@ -43,7 +43,17 @@ class Settings:
 
     @property
     def cors_origins(self) -> list[str]:
-        origins = {self.frontend_url, "http://localhost:3000"}
+        raw = os.environ.get("CORS_ORIGINS", "")
+        extra_origins = [o.strip() for o in raw.split(",") if o.strip()]
+
+        origins = {
+            self.frontend_url,
+            "http://localhost:3000",
+            "http://localhost:5173",
+            "http://localhost:8080",
+            *extra_origins,
+        }
+
         return [o for o in origins if o]
 
 
